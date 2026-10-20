@@ -158,7 +158,7 @@ button{font:inherit;touch-action:manipulation}
 <script>
 const CATEGORIES=['Hoggie','Bistro','Bakery','Table','Round','Extra'];
 const TABLE_NUMBERS=[1,2,3,4,5,6,7,8,9];
-const STORE='bordsnota_pwa_v2';
+const STORE='bordsnota_pwa_v6';
 
 const FOOD=[
   {label:'Mat 15 €',price:15},
@@ -174,7 +174,7 @@ const FOOD=[
 const DRINK_GROUPS=[
   {group:'Öl',items:[
     {label:'Caña',price:2.5,sub:'2,50 €'},
-    {label:'Tanque',price:3.5,sub:'3,50 €'},
+    {label:'Tanque / Grande',price:3.5,sub:'3,50 €'},
     {label:'Flasköl',price:3.5,sub:'3,50 €'},
     {label:'Sidra',price:3.5,sub:'3,50 €'}
   ]},
@@ -184,16 +184,18 @@ const DRINK_GROUPS=[
   {group:'Kaffe',items:[
     {label:'Kaffe',price:2,sub:'2,00 € · Solo · Americano · Con leche · Cortado'},
     {label:'Bombón',price:2.5,sub:'2,50 €'},
-    {label:'Carajillo',price:4,sub:'4,00 €'}
+    {label:'Carajillo',price:4,sub:'4,00 €'},
+    {label:'Kaffedrink',price:7,sub:'7,00 €'}
   ]},
   {group:'Vin',items:[
-    {label:'Vinglas',price:3.5,sub:'3,50 € · Rueda · Crianza · Chardonnay'},
-    {label:'Rosé glas',price:4,sub:'4,00 €'},
-    {label:'Rioja glas',price:4.5,sub:'4,50 €'},
-    {label:'Vinflaska',price:10,sub:'10,00 €'},
-    {label:'Vinflaska',price:12.5,sub:'12,50 €'},
-    {label:'Vinflaska',price:14,sub:'14,00 €'},
-    {label:'Vinflaska',price:15,sub:'15,00 €'}
+    {label:'Vinglas 2,50 €',price:2.5,sub:'La Casa'},
+    {label:'Vinglas 3,50 €',price:3.5,sub:'Rueda · Crianza · Chardonnay'},
+    {label:'Vinglas 4,00 €',price:4,sub:'Rosé Rioja'},
+    {label:'Vinglas 4,50 €',price:4.5,sub:'Rioja'},
+    {label:'Vinflaska 10,00 €',price:10,sub:'La Casa'},
+    {label:'Vinflaska 12,50 €',price:12.5,sub:'Rueda · Crianza · Chardonnay'},
+    {label:'Vinflaska 14,00 €',price:14,sub:'Rosé Rioja'},
+    {label:'Vinflaska 15,00 €',price:15,sub:'Rioja'}
   ]},
   {group:'Cava',items:[
     {label:'Cava glas',price:4,sub:'4,00 €'},
@@ -201,10 +203,16 @@ const DRINK_GROUPS=[
   ]},
   {group:'Sprit / cocktails',items:[
     {label:'Chupito',price:3.5,sub:'3,50 €'},
+    {label:'Licore',price:4,sub:'4,00 €'},
     {label:'Whisky',price:5,sub:'5,00 € · Jameson / Famous Grouse'},
     {label:'Gin & Tonic',price:7,sub:'7,00 €'},
     {label:'Cocktail',price:8,sub:'8,00 €'},
     {label:'Rémy Martin',price:10,sub:'10,00 €'}
+  ]},
+  {group:'Dessert',items:[
+    {label:'Helado',price:4,sub:'4,00 €'},
+    {label:'Tarta',price:4,sub:'4,00 €'},
+    {label:'Tarta manzana',price:5,sub:'5,00 €'}
   ]},
   {group:'Övrigt',items:[
     {label:'Annat pris',custom:true,sub:'Skriv valfritt belopp'}
