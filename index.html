@@ -74,7 +74,7 @@ button{font:inherit;touch-action:manipulation}
 .qty{min-width:22px;text-align:center;font-weight:900}
 .note-total{display:flex;justify-content:space-between;padding:14px;font-size:22px;font-weight:900;background:#fafafa}
 .empty{padding:18px;text-align:center;color:var(--muted)}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
 .action{border:0;border-radius:14px;padding:15px 10px;font-size:16px;font-weight:900}
 .undo{background:#e8e8eb}.clear{background:#fee4e2;color:var(--danger)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
@@ -83,6 +83,22 @@ button{font:inherit;touch-action:manipulation}
 .toast.show{opacity:1}
 .help{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.4}
 @media(min-width:600px){.price-grid{grid-template-columns:repeat(3,1fr)}.number-grid{grid-template-columns:repeat(5,1fr)}}
+
+.drink-group{margin-top:16px}
+.drink-group:first-child{margin-top:0}
+.drink-group-title{font-size:14px;font-weight:900;color:#4d4d53;margin:0 2px 7px}
+.danger-all{width:100%;margin-top:22px;border:1px solid #f3b6b1;background:#fee4e2;color:#b42318;border-radius:14px;padding:14px 12px;font-weight:900;font-size:16px}
+.print{background:#e8f0fe;color:#174ea6}
+@media print{
+ body{background:#fff}
+ header,.choice-grid,.price-grid,.section-title,.actions,.back,.toast,.help,.cat-grid,.number-grid,.danger-all,.drink-group-title{display:none!important}
+ .wrap{padding:0;margin:0;max-width:none}.note{border:0;border-radius:0;margin:0;font-size:12px}
+ .note-head{font-size:18px;text-align:center;padding:8px 0;border-bottom:1px dashed #000}
+ .line{padding:6px 0;border-bottom:0}.controls{display:none!important}.line-main{font-size:13px}.line-sub{font-size:11px;color:#000}
+ .note-total{font-size:17px;padding:8px 0;border-top:1px dashed #000;background:#fff}
+ #categoryView,#tableView,#typeView,#foodView,#drinkView{display:none!important}
+ body.printing #typeView{display:block!important}body.printing #noteMount{display:block!important}
+}
 </style>
 </head>
 <body>
@@ -99,6 +115,7 @@ button{font:inherit;touch-action:manipulation}
     <div class="section-title">Välj kategori</div>
     <div class="cat-grid" id="categoryGrid"></div>
     <div class="help">Aktiva kategorier och bord markeras när det finns en pågående nota.</div>
+    <button class="danger-all" id="clearAllBtn">Töm alla bord</button>
   </section>
 
   <section id="tableView" class="hidden">
@@ -123,7 +140,7 @@ button{font:inherit;touch-action:manipulation}
 
   <section id="drinkView" class="hidden">
     <div class="section-title">Dryck</div>
-    <div class="price-grid" id="drinkGrid"></div>
+    <div id="drinkGroups"></div>
     <div id="drinkNoteMount"></div>
   </section>
 </main>
@@ -141,24 +158,47 @@ const FOOD=[
   {label:'Mat 25 €',price:25},
   {label:'Mat 30 €',price:30},
   {label:'Mat 35 €',price:35},
+  {label:'Mat 40 €',price:40},
+  {label:'Mat 45 €',price:45},
   {label:'Annat matpris',custom:true}
 ];
 
-const DRINK=[
-  {label:'Dryck 2 €',price:2},
-  {label:'Dryck 2,50 €',price:2.5,sub:'Caña · Bombón · läsk/vatten m.fl.'},
-  {label:'Dryck 3,50 €',price:3.5},
-  {label:'Dryck 4 €',price:4},
-  {label:'Dryck 4,50 €',price:4.5},
-  {label:'Dryck 5 €',price:5},
-  {label:'Dryck 7 €',price:7},
-  {label:'Dryck 8 €',price:8},
-  {label:'Dryck 10 €',price:10},
-  {label:'Dryck 12 €',price:12},
-  {label:'Dryck 12,50 €',price:12.5},
-  {label:'Dryck 14 €',price:14},
-  {label:'Dryck 15 €',price:15},
-  {label:'Annat pris',custom:true}
+const DRINK_GROUPS=[
+  {group:'Öl',items:[
+    {label:'Caña',price:2.5},
+    {label:'Tanque',price:3.5},
+    {label:'Flasköl',price:3.5},
+    {label:'Sidra',price:3.5}
+  ]},
+  {group:'Läsk / vatten',items:[
+    {label:'Läsk / vatten',price:2.5,sub:'Coca/Fanta · Casera · Tonic · vatten'}
+  ]},
+  {group:'Kaffe',items:[
+    {label:'Kaffe',price:2,sub:'Solo · Americano · Con leche · Cortado'},
+    {label:'Bombón',price:2.5},
+    {label:'Carajillo',price:4}
+  ]},
+  {group:'Vin',items:[
+    {label:'Vinglas',price:3.5,sub:'Rueda · Crianza · Chardonnay'},
+    {label:'Rosé glas',price:4},
+    {label:'Rioja glas',price:4.5},
+    {label:'Vinflaska',price:10},
+    {label:'Vinflaska',price:12.5},
+    {label:'Vinflaska',price:14},
+    {label:'Vinflaska',price:15}
+  ]},
+  {group:'Cava',items:[
+    {label:'Cava glas',price:4},
+    {label:'Cava flaska',price:12}
+  ]},
+  {group:'Sprit / cocktails',items:[
+    {label:'Chupito',price:3.5},
+    {label:'Whisky',price:5,sub:'Jameson / Famous Grouse'},
+    {label:'Gin & Tonic',price:7},
+    {label:'Cocktail',price:8},
+    {label:'Rémy Martin',price:10}
+  ]},
+  {group:'Övrigt',items:[{label:'Annat pris',custom:true}]}
 ];
 
 let data={};
@@ -216,7 +256,7 @@ function renderNumbers(){
     const k=keyFor(selectedCategory,n), t=total(k);
     const b=document.createElement('button');
     b.className='num'+(t>0?' active':'');
-    b.innerHTML=`${n}${t>0?`<span class="amount">${fmt(t)}</span>`:''}`;
+    b.innerHTML=`${selectedCategory} ${n}${t>0?`<span class="amount">${fmt(t)}</span>`:''}`;
     b.onclick=()=>openTable(n);
     g.appendChild(b);
   });
@@ -253,10 +293,16 @@ function makePrice(item,kind){
   return b;
 }
 function renderPriceGrids(){
-  const fg=document.getElementById('foodGrid'),dg=document.getElementById('drinkGrid');
+  const fg=document.getElementById('foodGrid'),dg=document.getElementById('drinkGroups');
   fg.innerHTML='';dg.innerHTML='';
   FOOD.forEach(x=>fg.appendChild(makePrice(x,'food')));
-  DRINK.forEach(x=>dg.appendChild(makePrice(x,'drink')));
+  DRINK_GROUPS.forEach(gr=>{
+    const wrap=document.createElement('div');wrap.className='drink-group';
+    const title=document.createElement('div');title.className='drink-group-title';title.textContent=gr.group;
+    const grid=document.createElement('div');grid.className='price-grid';
+    gr.items.forEach(x=>grid.appendChild(makePrice(x,'drink')));
+    wrap.appendChild(title);wrap.appendChild(grid);dg.appendChild(wrap);
+  });
 }
 function addItem(label,price){
   const a=items(selectedKey);
@@ -284,11 +330,12 @@ function noteHTML(){
     </div>`;
   });
   return `<div class="note">
-    <div class="note-head">Aktuell nota</div>${rows}
+    <div class="note-head">${selectedCategory} ${selectedNumber}</div>${rows}
     <div class="note-total"><span>Totalt</span><span>${fmt(total(selectedKey))}</span></div>
   </div>
   <div class="actions">
-    <button class="action undo" id="undoAction">↶ Ångra senaste</button>
+    <button class="action undo" id="undoAction">↶ Ångra</button>
+    <button class="action print" id="printAction">Skriv ut</button>
     <button class="action clear" id="clearAction">Betalt / töm</button>
   </div>`;
 }
@@ -300,6 +347,11 @@ function bindNote(mount){
     const a=items(selectedKey),i=a.findIndex(x=>x.label===lastAction.label&&x.price===lastAction.price);
     if(i>=0){a[i].qty--;if(a[i].qty<=0)a.splice(i,1);save();renderNoteAll()}
     lastAction=null;
+  };
+  const p=mount.querySelector('#printAction');
+  if(p)p.onclick=()=>{
+    if(!items(selectedKey).length){toast('Notan är tom');return}
+    document.body.classList.add('printing');window.print();setTimeout(()=>document.body.classList.remove('printing'),500);
   };
   const c=mount.querySelector('#clearAction');
   if(c)c.onclick=()=>{
@@ -320,12 +372,20 @@ function toast(s){
   setTimeout(()=>t.classList.remove('show'),900);
 }
 
+document.getElementById('clearAllBtn').onclick=()=>{
+  const active=Object.keys(data).filter(k=>total(k)>0);
+  if(!active.length){toast('Inga aktiva bord');return}
+  if(confirm(`Töm alla ${active.length} aktiva bord? Detta går inte att ångra.`)){
+    data={};lastAction=null;save();renderCategories();toast('Alla bord är tömda');
+  }
+};
+
 renderCategories();
 renderPriceGrids();
 setHeader();
 
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).catch(()=>{}));
 }
 </script>
 </body>
