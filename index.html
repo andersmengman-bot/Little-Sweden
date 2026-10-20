@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bordsnota">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Bordsnota</title>
+<style>
+:root{
+  --bg:#f5f5f7; --card:#fff; --text:#151515; --muted:#707078;
+  --line:#e3e3e7; --active:#e6f6e6; --danger:#b42318;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-tap-highlight-color:transparent}
+header{
+  position:sticky;top:0;z-index:10;background:rgba(245,245,247,.96);
+  backdrop-filter:blur(12px);padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
+  border-bottom:1px solid var(--line)
+}
+.header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{margin:0;font-size:21px}
+button{font:inherit;touch-action:manipulation}
+.wrap{max-width:760px;margin:auto;padding:14px 14px calc(28px + env(safe-area-inset-bottom))}
+.hidden{display:none!important}
+.back{border:0;background:#e8e8eb;border-radius:11px;padding:9px 12px;font-weight:800}
+.top-total{font-weight:900;font-size:18px;white-space:nowrap}
+
+.section-title{
+  color:var(--muted);font-size:13px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.06em;margin:5px 2px 9px
+}
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.cat{
+  min-height:82px;border:1px solid var(--line);background:#fff;border-radius:16px;
+  font-size:18px;font-weight:900;box-shadow:0 1px 2px rgba(0,0,0,.04)
+}
+.cat.active{background:var(--active)}
+.number-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.num{
+  min-height:70px;border:1px solid var(--line);background:#fff;border-radius:14px;
+  font-size:21px;font-weight:900
+}
+.num.active{background:var(--active)}
+.num .amount{display:block;font-size:12px;color:#356635;margin-top:4px}
+
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice{
+  min-height:100px;border:1px solid var(--line);background:#fff;border-radius:17px;
+  font-size:24px;font-weight:900
+}
+.price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.price{
+  min-height:66px;border:1px solid var(--line);background:#fff;border-radius:14px;
+  font-size:18px;font-weight:900;text-align:left;padding:10px 12px
+}
+.price small{display:block;margin-top:3px;font-size:12px;color:var(--muted);font-weight:700}
+.price:active,.cat:active,.num:active,.choice:active{transform:scale(.98);background:#efeff2}
+
+.note{margin-top:16px;border:1px solid var(--line);background:#fff;border-radius:16px;overflow:hidden}
+.note-head{padding:12px 14px;font-weight:900;border-bottom:1px solid var(--line)}
+.line{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
+  padding:11px 12px;border-bottom:1px solid var(--line)}
+.line-main{font-weight:800}
+.line-sub{color:var(--muted);font-size:12px;margin-top:2px}
+.controls{display:flex;align-items:center;gap:7px}
+.small{width:38px;height:38px;border:0;border-radius:10px;background:#ededf0;font-size:22px;font-weight:800}
+.qty{min-width:22px;text-align:center;font-weight:900}
+.note-total{display:flex;justify-content:space-between;padding:14px;font-size:22px;font-weight:900;background:#fafafa}
+.empty{padding:18px;text-align:center;color:var(--muted)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.action{border:0;border-radius:14px;padding:15px 10px;font-size:16px;font-weight:900}
+.undo{background:#e8e8eb}.clear{background:#fee4e2;color:var(--danger)}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
+  transform:translateX(-50%);background:#111;color:#fff;border-radius:999px;padding:10px 14px;
+  font-size:14px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:20}
+.toast.show{opacity:1}
+.help{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.4}
+@media(min-width:600px){.price-grid{grid-template-columns:repeat(3,1fr)}.number-grid{grid-template-columns:repeat(5,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="header">
+    <button id="backBtn" class="back hidden">← Tillbaka</button>
+    <h1 id="title">Bordsnota</h1>
+    <div id="topTotal" class="top-total"></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="categoryView">
+    <div class="section-title">Välj kategori</div>
+    <div class="cat-grid" id="categoryGrid"></div>
+    <div class="help">Aktiva kategorier och bord markeras när det finns en pågående nota.</div>
+  </section>
+
+  <section id="tableView" class="hidden">
+    <div class="section-title" id="tableHeading">Välj bord</div>
+    <div class="number-grid" id="numberGrid"></div>
+  </section>
+
+  <section id="typeView" class="hidden">
+    <div class="section-title">Lägg till</div>
+    <div class="choice-grid">
+      <button class="choice" id="foodBtn">MAT</button>
+      <button class="choice" id="drinkBtn">DRYCK</button>
+    </div>
+    <div id="noteMount"></div>
+  </section>
+
+  <section id="foodView" class="hidden">
+    <div class="section-title">Mat</div>
+    <div class="price-grid" id="foodGrid"></div>
+    <div id="foodNoteMount"></div>
+  </section>
+
+  <section id="drinkView" class="hidden">
+    <div class="section-title">Dryck</div>
+    <div class="price-grid" id="drinkGrid"></div>
+    <div id="drinkNoteMount"></div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CATEGORIES=['Hoggie','Bistro','Bakery','Table','Round','Extra'];
+const TABLE_NUMBERS=[1,2,3,4,5,6,7,8,9,10];
+const STORE='bordsnota_pwa_v2';
+
+const FOOD=[
+  {label:'Mat 15 €',price:15},
+  {label:'Mat 18,50 €',price:18.5},
+  {label:'Mat 25 €',price:25},
+  {label:'Mat 30 €',price:30},
+  {label:'Mat 35 €',price:35},
+  {label:'Annat matpris',custom:true}
+];
+
+const DRINK=[
+  {label:'Dryck 2 €',price:2},
+  {label:'Dryck 2,50 €',price:2.5,sub:'Caña · Bombón · läsk/vatten m.fl.'},
+  {label:'Dryck 3,50 €',price:3.5},
+  {label:'Dryck 4 €',price:4},
+  {label:'Dryck 4,50 €',price:4.5},
+  {label:'Dryck 5 €',price:5},
+  {label:'Dryck 7 €',price:7},
+  {label:'Dryck 8 €',price:8},
+  {label:'Dryck 10 €',price:10},
+  {label:'Dryck 12 €',price:12},
+  {label:'Dryck 12,50 €',price:12.5},
+  {label:'Dryck 14 €',price:14},
+  {label:'Dryck 15 €',price:15},
+  {label:'Annat pris',custom:true}
+];
+
+let data={};
+try{data=JSON.parse(localStorage.getItem(STORE)||'{}')||{}}catch(e){data={}}
+let selectedCategory=null, selectedNumber=null, selectedKey=null, lastAction=null;
+let view='category';
+
+const fmt=n=>n.toLocaleString('sv-SE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+const save=()=>localStorage.setItem(STORE,JSON.stringify(data));
+const items=k=>{if(!data[k])data[k]=[];return data[k]};
+const total=k=>(data[k]||[]).reduce((s,x)=>s+x.price*x.qty,0);
+const count=k=>(data[k]||[]).reduce((s,x)=>s+x.qty,0);
+
+function categoryHasActive(cat){
+  return Object.keys(data).some(k=>k.startsWith(cat+'::') && total(k)>0);
+}
+function keyFor(cat,n){return cat+'::'+n}
+
+function setHeader(){
+  const title=document.getElementById('title'), tt=document.getElementById('topTotal'), back=document.getElementById('backBtn');
+  back.classList.toggle('hidden',view==='category');
+  if(view==='category'){title.textContent='Bordsnota';tt.textContent=''}
+  else if(view==='table'){title.textContent=selectedCategory;tt.textContent=''}
+  else{
+    title.textContent=selectedCategory+' '+selectedNumber;
+    tt.textContent=fmt(total(selectedKey));
+  }
+}
+
+function showOnly(id){
+  ['categoryView','tableView','typeView','foodView','drinkView'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  setHeader();
+}
+
+function renderCategories(){
+  const g=document.getElementById('categoryGrid');g.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const b=document.createElement('button');
+    b.className='cat'+(categoryHasActive(cat)?' active':'');
+    b.textContent=cat;
+    b.onclick=()=>openCategory(cat);
+    g.appendChild(b);
+  });
+}
+
+function openCategory(cat){
+  selectedCategory=cat;view='table';
+  document.getElementById('tableHeading').textContent='Välj bord – '+cat;
+  renderNumbers();showOnly('tableView');
+}
+function renderNumbers(){
+  const g=document.getElementById('numberGrid');g.innerHTML='';
+  TABLE_NUMBERS.forEach(n=>{
+    const k=keyFor(selectedCategory,n), t=total(k);
+    const b=document.createElement('button');
+    b.className='num'+(t>0?' active':'');
+    b.innerHTML=`${n}${t>0?`<span class="amount">${fmt(t)}</span>`:''}`;
+    b.onclick=()=>openTable(n);
+    g.appendChild(b);
+  });
+}
+function openTable(n){
+  selectedNumber=n;selectedKey=keyFor(selectedCategory,n);view='type';
+  renderNoteAll();showOnly('typeView');
+}
+function showFood(){view='food';renderNoteAll();showOnly('foodView')}
+function showDrink(){view='drink';renderNoteAll();showOnly('drinkView')}
+document.getElementById('foodBtn').onclick=showFood;
+document.getElementById('drinkBtn').onclick=showDrink;
+
+document.getElementById('backBtn').onclick=()=>{
+  if(view==='food'||view==='drink'){view='type';renderNoteAll();showOnly('typeView')}
+  else if(view==='type'){view='table';renderNumbers();showOnly('tableView')}
+  else if(view==='table'){view='category';renderCategories();showOnly('categoryView')}
+};
+
+function makePrice(item,kind){
+  const b=document.createElement('button');b.className='price';
+  b.innerHTML=item.label+(item.sub?`<small>${item.sub}</small>`:'');
+  b.onclick=()=>{
+    let p=item.price,label=item.label;
+    if(item.custom){
+      const v=prompt('Ange pris i euro, t.ex. 22,50');
+      if(v===null)return;
+      p=parseFloat(v.replace(',','.'));
+      if(!Number.isFinite(p)||p<0){alert('Ogiltigt pris');return}
+      label=(kind==='food'?'Mat ':'Dryck ')+fmt(p);
+    }
+    addItem(label,p);
+  };
+  return b;
+}
+function renderPriceGrids(){
+  const fg=document.getElementById('foodGrid'),dg=document.getElementById('drinkGrid');
+  fg.innerHTML='';dg.innerHTML='';
+  FOOD.forEach(x=>fg.appendChild(makePrice(x,'food')));
+  DRINK.forEach(x=>dg.appendChild(makePrice(x,'drink')));
+}
+function addItem(label,price){
+  const a=items(selectedKey);
+  let x=a.find(i=>i.label===label&&i.price===price);
+  if(x)x.qty++;else a.push({label,price,qty:1});
+  lastAction={key:selectedKey,label,price};
+  save();renderNoteAll();toast('+1 '+label);
+}
+function changeQty(i,d){
+  const a=items(selectedKey);if(!a[i])return;
+  a[i].qty+=d;if(a[i].qty<=0)a.splice(i,1);
+  save();renderNoteAll();
+}
+function noteHTML(){
+  const a=items(selectedKey);
+  let rows=a.length?'':'<div class="empty">Ingen beställning ännu</div>';
+  a.forEach((x,i)=>{
+    rows+=`<div class="line">
+      <div><div class="line-main">${x.label}</div><div class="line-sub">${x.qty} × ${fmt(x.price)} = ${fmt(x.qty*x.price)}</div></div>
+      <div class="controls">
+        <button class="small" data-i="${i}" data-d="-1">−</button>
+        <span class="qty">${x.qty}</span>
+        <button class="small" data-i="${i}" data-d="1">+</button>
+      </div>
+    </div>`;
+  });
+  return `<div class="note">
+    <div class="note-head">Aktuell nota</div>${rows}
+    <div class="note-total"><span>Totalt</span><span>${fmt(total(selectedKey))}</span></div>
+  </div>
+  <div class="actions">
+    <button class="action undo" id="undoAction">↶ Ångra senaste</button>
+    <button class="action clear" id="clearAction">Betalt / töm</button>
+  </div>`;
+}
+function bindNote(mount){
+  mount.querySelectorAll('.small').forEach(b=>b.onclick=()=>changeQty(+b.dataset.i,+b.dataset.d));
+  const u=mount.querySelector('#undoAction');
+  if(u)u.onclick=()=>{
+    if(!lastAction||lastAction.key!==selectedKey){toast('Inget att ångra');return}
+    const a=items(selectedKey),i=a.findIndex(x=>x.label===lastAction.label&&x.price===lastAction.price);
+    if(i>=0){a[i].qty--;if(a[i].qty<=0)a.splice(i,1);save();renderNoteAll()}
+    lastAction=null;
+  };
+  const c=mount.querySelector('#clearAction');
+  if(c)c.onclick=()=>{
+    if(!items(selectedKey).length)return;
+    if(confirm(`Töm ${selectedCategory} ${selectedNumber}? Gör detta först när notan är betald.`)){
+      data[selectedKey]=[];lastAction=null;save();renderNoteAll();toast('Bordet är tömt');
+    }
+  };
+}
+function renderNoteAll(){
+  ['noteMount','foodNoteMount','drinkNoteMount'].forEach(id=>{
+    const m=document.getElementById(id);m.innerHTML=noteHTML();bindNote(m);
+  });
+  setHeader();
+}
+function toast(s){
+  const t=document.getElementById('toast');t.textContent=s;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),900);
+}
+
+renderCategories();
+renderPriceGrids();
+setHeader();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
