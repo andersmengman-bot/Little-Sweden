@@ -1,20 +1,24 @@
 {
-  "name": "Bordsnota",
-  "short_name": "Bordsnota",
+  "name": "Lilla Svensken Bordsnota",
+  "short_name": "Lilla Svensken",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f5f7",
-  "theme_color": "#111111",
+  "background_color": "#fbf5df",
+  "theme_color": "#0b2a5b",
+  "description": "Enkel bordsnota för Lilla Svensken",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

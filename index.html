@@ -6,21 +6,29 @@
 <meta name="theme-color" content="#111111">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Bordsnota">
+<meta name="apple-mobile-web-app-title" content="Lilla Svensken">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Bordsnota</title>
+<title>Lilla Svensken – Bordsnota</title>
 <style>
 :root{
-  --bg:#f5f5f7; --card:#fff; --text:#151515; --muted:#707078;
-  --line:#e3e3e7; --active:#e6f6e6; --danger:#b42318;
+  --bg:#fbf5df;
+  --card:#fffdf5;
+  --text:#0b2a5b;
+  --muted:#6f6b5f;
+  --line:#d9c98f;
+  --active:#f4df9a;
+  --danger:#b42318;
+  --navy:#0b2a5b;
+  --gold:#d6a62d;
+  --cream:#fbf5df;
 }
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   -webkit-tap-highlight-color:transparent}
 header{
-  position:sticky;top:0;z-index:10;background:rgba(245,245,247,.96);
+  position:sticky;top:0;z-index:10;background:rgba(251,245,223,.97);
   backdrop-filter:blur(12px);padding:calc(10px + env(safe-area-inset-top)) 14px 10px;
   border-bottom:1px solid var(--line)
 }
@@ -29,7 +37,7 @@ h1{margin:0;font-size:21px}
 button{font:inherit;touch-action:manipulation}
 .wrap{max-width:760px;margin:auto;padding:14px 14px calc(28px + env(safe-area-inset-bottom))}
 .hidden{display:none!important}
-.back{border:0;background:#e8e8eb;border-radius:11px;padding:9px 12px;font-weight:800}
+.back{border:0;background:var(--navy);color:white;border-radius:11px;padding:9px 12px;font-weight:800}
 .top-total{font-weight:900;font-size:18px;white-space:nowrap}
 
 .section-title{
@@ -38,33 +46,33 @@ button{font:inherit;touch-action:manipulation}
 }
 .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .cat{
-  min-height:82px;border:1px solid var(--line);background:#fff;border-radius:16px;
-  font-size:18px;font-weight:900;box-shadow:0 1px 2px rgba(0,0,0,.04)
+  min-height:82px;border:2px solid var(--navy);background:var(--navy);color:white;border-radius:16px;
+  font-size:18px;font-weight:900;box-shadow:0 2px 4px rgba(0,0,0,.08)
 }
-.cat.active{background:var(--active)}
-.number-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.cat.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.number-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .num{
-  min-height:70px;border:1px solid var(--line);background:#fff;border-radius:14px;
-  font-size:21px;font-weight:900
+  min-height:70px;border:2px solid var(--navy);background:var(--card);color:var(--navy);border-radius:14px;
+  font-size:18px;font-weight:900
 }
-.num.active{background:var(--active)}
+.num.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
 .num .amount{display:block;font-size:12px;color:#356635;margin-top:4px}
 
 .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .choice{
-  min-height:100px;border:1px solid var(--line);background:#fff;border-radius:17px;
+  min-height:100px;border:2px solid var(--navy);background:var(--navy);color:white;border-radius:17px;
   font-size:24px;font-weight:900
 }
 .price-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
 .price{
-  min-height:66px;border:1px solid var(--line);background:#fff;border-radius:14px;
+  min-height:66px;border:2px solid var(--gold);background:var(--card);color:var(--navy);border-radius:14px;
   font-size:18px;font-weight:900;text-align:left;padding:10px 12px
 }
-.price small{display:block;margin-top:3px;font-size:12px;color:var(--muted);font-weight:700}
-.price:active,.cat:active,.num:active,.choice:active{transform:scale(.98);background:#efeff2}
+.price small{display:block;margin-top:4px;font-size:13px;color:#7a5b00;font-weight:800}
+.price:active,.cat:active,.num:active,.choice:active{transform:scale(.98);filter:brightness(.96)}
 
-.note{margin-top:16px;border:1px solid var(--line);background:#fff;border-radius:16px;overflow:hidden}
-.note-head{padding:12px 14px;font-weight:900;border-bottom:1px solid var(--line)}
+.note{margin-top:16px;border:2px solid var(--navy);background:var(--card);border-radius:16px;overflow:hidden}
+.note-head{padding:12px 14px;font-weight:900;border-bottom:2px solid var(--gold);background:var(--navy);color:white}
 .line{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;
   padding:11px 12px;border-bottom:1px solid var(--line)}
 .line-main{font-weight:800}
@@ -72,23 +80,23 @@ button{font:inherit;touch-action:manipulation}
 .controls{display:flex;align-items:center;gap:7px}
 .small{width:38px;height:38px;border:0;border-radius:10px;background:#ededf0;font-size:22px;font-weight:800}
 .qty{min-width:22px;text-align:center;font-weight:900}
-.note-total{display:flex;justify-content:space-between;padding:14px;font-size:22px;font-weight:900;background:#fafafa}
+.note-total{display:flex;justify-content:space-between;padding:14px;font-size:22px;font-weight:900;background:var(--gold);color:var(--navy)}
 .empty{padding:18px;text-align:center;color:var(--muted)}
 .actions{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
 .action{border:0;border-radius:14px;padding:15px 10px;font-size:16px;font-weight:900}
-.undo{background:#e8e8eb}.clear{background:#fee4e2;color:var(--danger)}
+.undo{background:#eee7cf;color:var(--navy)}.clear{background:#fee4e2;color:var(--danger)}
 .toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));
   transform:translateX(-50%);background:#111;color:#fff;border-radius:999px;padding:10px 14px;
   font-size:14px;font-weight:800;opacity:0;pointer-events:none;transition:.2s;z-index:20}
 .toast.show{opacity:1}
 .help{margin-top:14px;font-size:13px;color:var(--muted);line-height:1.4}
-@media(min-width:600px){.price-grid{grid-template-columns:repeat(3,1fr)}.number-grid{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:600px){.price-grid{grid-template-columns:repeat(3,1fr)}.number-grid{grid-template-columns:repeat(3,1fr)}}
 
 .drink-group{margin-top:16px}
 .drink-group:first-child{margin-top:0}
-.drink-group-title{font-size:14px;font-weight:900;color:#4d4d53;margin:0 2px 7px}
+.drink-group-title{font-size:15px;font-weight:900;color:var(--navy);margin:0 2px 7px;padding-bottom:4px;border-bottom:2px solid var(--gold)}
 .danger-all{width:100%;margin-top:22px;border:1px solid #f3b6b1;background:#fee4e2;color:#b42318;border-radius:14px;padding:14px 12px;font-weight:900;font-size:16px}
-.print{background:#e8f0fe;color:#174ea6}
+.print{background:var(--navy);color:white;border:2px solid var(--gold)}
 @media print{
  body{background:#fff}
  header,.choice-grid,.price-grid,.section-title,.actions,.back,.toast,.help,.cat-grid,.number-grid,.danger-all,.drink-group-title{display:none!important}
@@ -105,7 +113,7 @@ button{font:inherit;touch-action:manipulation}
 <header>
   <div class="header">
     <button id="backBtn" class="back hidden">← Tillbaka</button>
-    <h1 id="title">Bordsnota</h1>
+    <h1 id="title">Lilla Svensken</h1>
     <div id="topTotal" class="top-total"></div>
   </div>
 </header>
@@ -149,7 +157,7 @@ button{font:inherit;touch-action:manipulation}
 
 <script>
 const CATEGORIES=['Hoggie','Bistro','Bakery','Table','Round','Extra'];
-const TABLE_NUMBERS=[1,2,3,4,5,6,7,8,9,10];
+const TABLE_NUMBERS=[1,2,3,4,5,6,7,8,9];
 const STORE='bordsnota_pwa_v2';
 
 const FOOD=[
@@ -165,40 +173,42 @@ const FOOD=[
 
 const DRINK_GROUPS=[
   {group:'Öl',items:[
-    {label:'Caña',price:2.5},
-    {label:'Tanque',price:3.5},
-    {label:'Flasköl',price:3.5},
-    {label:'Sidra',price:3.5}
+    {label:'Caña',price:2.5,sub:'2,50 €'},
+    {label:'Tanque',price:3.5,sub:'3,50 €'},
+    {label:'Flasköl',price:3.5,sub:'3,50 €'},
+    {label:'Sidra',price:3.5,sub:'3,50 €'}
   ]},
   {group:'Läsk / vatten',items:[
-    {label:'Läsk / vatten',price:2.5,sub:'Coca/Fanta · Casera · Tonic · vatten'}
+    {label:'Läsk / vatten',price:2.5,sub:'2,50 € · Coca/Fanta · Casera · Tonic · vatten'}
   ]},
   {group:'Kaffe',items:[
-    {label:'Kaffe',price:2,sub:'Solo · Americano · Con leche · Cortado'},
-    {label:'Bombón',price:2.5},
-    {label:'Carajillo',price:4}
+    {label:'Kaffe',price:2,sub:'2,00 € · Solo · Americano · Con leche · Cortado'},
+    {label:'Bombón',price:2.5,sub:'2,50 €'},
+    {label:'Carajillo',price:4,sub:'4,00 €'}
   ]},
   {group:'Vin',items:[
-    {label:'Vinglas',price:3.5,sub:'Rueda · Crianza · Chardonnay'},
-    {label:'Rosé glas',price:4},
-    {label:'Rioja glas',price:4.5},
-    {label:'Vinflaska',price:10},
-    {label:'Vinflaska',price:12.5},
-    {label:'Vinflaska',price:14},
-    {label:'Vinflaska',price:15}
+    {label:'Vinglas',price:3.5,sub:'3,50 € · Rueda · Crianza · Chardonnay'},
+    {label:'Rosé glas',price:4,sub:'4,00 €'},
+    {label:'Rioja glas',price:4.5,sub:'4,50 €'},
+    {label:'Vinflaska',price:10,sub:'10,00 €'},
+    {label:'Vinflaska',price:12.5,sub:'12,50 €'},
+    {label:'Vinflaska',price:14,sub:'14,00 €'},
+    {label:'Vinflaska',price:15,sub:'15,00 €'}
   ]},
   {group:'Cava',items:[
-    {label:'Cava glas',price:4},
-    {label:'Cava flaska',price:12}
+    {label:'Cava glas',price:4,sub:'4,00 €'},
+    {label:'Cava flaska',price:12,sub:'12,00 €'}
   ]},
   {group:'Sprit / cocktails',items:[
-    {label:'Chupito',price:3.5},
-    {label:'Whisky',price:5,sub:'Jameson / Famous Grouse'},
-    {label:'Gin & Tonic',price:7},
-    {label:'Cocktail',price:8},
-    {label:'Rémy Martin',price:10}
+    {label:'Chupito',price:3.5,sub:'3,50 €'},
+    {label:'Whisky',price:5,sub:'5,00 € · Jameson / Famous Grouse'},
+    {label:'Gin & Tonic',price:7,sub:'7,00 €'},
+    {label:'Cocktail',price:8,sub:'8,00 €'},
+    {label:'Rémy Martin',price:10,sub:'10,00 €'}
   ]},
-  {group:'Övrigt',items:[{label:'Annat pris',custom:true}]}
+  {group:'Övrigt',items:[
+    {label:'Annat pris',custom:true,sub:'Skriv valfritt belopp'}
+  ]}
 ];
 
 let data={};
@@ -220,7 +230,7 @@ function keyFor(cat,n){return cat+'::'+n}
 function setHeader(){
   const title=document.getElementById('title'), tt=document.getElementById('topTotal'), back=document.getElementById('backBtn');
   back.classList.toggle('hidden',view==='category');
-  if(view==='category'){title.textContent='Bordsnota';tt.textContent=''}
+  if(view==='category'){title.textContent='Lilla Svensken';tt.textContent=''}
   else if(view==='table'){title.textContent=selectedCategory;tt.textContent=''}
   else{
     title.textContent=selectedCategory+' '+selectedNumber;
